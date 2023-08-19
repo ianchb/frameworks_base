@@ -139,6 +139,7 @@ import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.os.ParcelableException;
 import android.os.PersistableBundle;
+import android.os.PowerManagerInternal;
 import android.os.Process;
 import android.os.ReconcileSdkDataArgs;
 import android.os.RemoteException;
@@ -208,6 +209,7 @@ import com.android.server.ServiceThread;
 import com.android.server.SystemConfig;
 import com.android.server.ThreadPriorityBooster;
 import com.android.server.Watchdog;
+import com.android.server.am.ActivityManagerService.LocalService;
 import com.android.server.apphibernation.AppHibernationManagerInternal;
 import com.android.server.art.DexUseManagerLocal;
 import com.android.server.art.model.DeleteResult;
@@ -1005,6 +1007,7 @@ public class PackageManagerService implements PackageSender, TestUtilityService 
     private final SuspendPackageHelper mSuspendPackageHelper;
     private final DistractingPackageHelper mDistractingPackageHelper;
     private final StorageEventHelper mStorageEventHelper;
+    final PowerManagerInternal mPowerManagerInternal;
     private final FreeStorageHelper mFreeStorageHelper;
 
 
@@ -1990,6 +1993,7 @@ public class PackageManagerService implements PackageSender, TestUtilityService 
 
         mStorageEventHelper = testParams.storageEventHelper;
         mPackageMonitorCallbackHelper = testParams.packageMonitorCallbackHelper;
+        mPowerManagerInternal = null;
 
         registerObservers(false);
         invalidatePackageInfoCache();
@@ -2160,6 +2164,7 @@ public class PackageManagerService implements PackageSender, TestUtilityService 
                 mSuspendPackageHelper);
         mStorageEventHelper = new StorageEventHelper(this, mDeletePackageHelper,
                 mRemovePackageHelper);
+        mPowerManagerInternal = LocalServices.getService(PowerManagerInternal.class);
 
         synchronized (mLock) {
             // Create the computer as soon as the state objects have been installed.  The
